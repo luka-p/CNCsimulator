@@ -1,0 +1,49 @@
+﻿<Window x:Class="WpfApp1.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="732.857" Width="386.555">
+
+    <Border Padding="10">
+        <StackPanel>
+            <TextBlock Text="Napake" FontWeight="Bold" Margin="0 0 0 10"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Name="napaka1" Click="Napaka1_Click" Content="Napaka 1" Margin="0 0 5 0" Grid.Column="0"/>
+                <Button Name="napaka2" Click="Napaka2_Click" Content="Napaka 2" Margin="5 0 5 0" Grid.Column="1"/>
+                <Button Name="napaka3" Click="Napaka3_Click" Content="Napaka 3" Margin="5 0 0 0" Grid.Column="2"/>
+            </Grid>
+            <StackPanel>
+                <TextBlock x:Name="connection" Text="Waiting for connection" FontWeight="Bold" Margin="0 10"/>
+            </StackPanel>
+            <TextBox x:Name="textBox" Height="23" TextWrapping="Wrap" Margin="0 0 0 10 " Text="TextBox"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Name="xPlus" Margin="2" Grid.Column="0" Background="Gray">
+                    <TextBlock HorizontalAlignment="Center" Text="X+" Margin="5"/>
+                </Border>
+                <Border Name="xMinus" Margin="2" Grid.Column="1" Background="Gray">
+                    <TextBlock HorizontalAlignment="Center" Text="X-" Margin="5"/>
+                </Border>
+                <Border Name="yPlus" Margin="2" Grid.Column="2" Background="Gray">
+                    <TextBlock HorizontalAlignment="Center" Text="Y+" Margin="5"/>
+                </Border>
+                <Border Name="yMinus" Margin="2" Grid.Column="3" Background="Gray">
+                    <TextBlock HorizontalAlignment="Center" Text="Y-" Margin="5"/>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </Border>
+</Window>
