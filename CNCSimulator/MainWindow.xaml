@@ -22,8 +22,9 @@
             </Grid>
             <StackPanel>
                 <TextBlock x:Name="connection" Text="Waiting for connection" FontWeight="Bold" Margin="0 10"/>
+                <TextBlock Name="posX"  Padding="10" Text="X: 0"></TextBlock>
+                <TextBlock Name="posY" Padding="10" Text="Y: 0"></TextBlock>
             </StackPanel>
-            <TextBox x:Name="textBox" Height="23" TextWrapping="Wrap" Margin="0 0 0 10 " Text="TextBox"/>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

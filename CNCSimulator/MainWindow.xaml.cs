@@ -12,25 +12,34 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.IO;
-using System.IO.Pipes;
 using System.Threading;
 using System.Diagnostics;
 using Clifton.Core.Pipes;
+using System.Timers;
 
 namespace WpfApp1
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+
     public partial class MainWindow : Window
     {
         ServerPipe serverPipe;
+        System.Timers.Timer positionTimer;
+        double x, y;
+        double maxX, maxY;
+        double direction = 1;
 
 
         public MainWindow()
         {
             InitializeComponent();
+            x = 0f;
+            y = 0f;
+            maxX = 300;
+            maxY = 300;
+
             serverPipe = new ServerPipe("pipe", p => p.StartStringReaderAsync());
             serverPipe.DataReceived += (sndr, args) =>
                 Dispatcher.BeginInvoke(new Action(()=>
@@ -43,8 +52,20 @@ namespace WpfApp1
                 this.Dispatcher.BeginInvoke(new Action(() =>
                 {
                     connection.Text = "Connected";
+                    positionTimer.Enabled = true;
                 }));
 
+            serverPipe.PipeClosed += (sndr, args) =>
+                this.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    connection.Text = "Disconnected";
+                    positionTimer.Stop();
+                }));
+
+            // set timer to 0.25s interval
+            positionTimer = new System.Timers.Timer(100);
+            positionTimer.Elapsed += SendPosition;
+            positionTimer.AutoReset = true;
         }
 
         private void ProcessCommand(string command)
@@ -108,6 +129,23 @@ namespace WpfApp1
         private void Napaka3_Click(object sender, RoutedEventArgs e)
         {
             serverPipe.WriteString("ERROR 3");
+        }
+
+        private void SendPosition(Object source, ElapsedEventArgs e)
+        {
+            serverPipe.WriteString(String.Format("POSITION {0} {1}", x, y));
+            if (x >= maxX && y >= maxY)
+                direction = -direction;
+            x += direction;
+            y += direction;
+            this.Dispatcher.Invoke(() =>
+            {
+                posX.Text = "X: " + x;
+                posY.Text = "Y: " + y;
+            });
+            
+
+            
         }
     }
 }
