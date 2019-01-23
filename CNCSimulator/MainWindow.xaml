@@ -45,6 +45,9 @@
                     <TextBlock HorizontalAlignment="Center" Text="Y-" Margin="5"/>
                 </Border>
             </Grid>
+            <Border Name="plasma" Margin="2" Background="Gray">
+                <TextBlock HorizontalAlignment="Center" Text="Plasma" Margin="5"></TextBlock>
+            </Border>
         </StackPanel>
     </Border>
 </Window>

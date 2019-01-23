@@ -30,6 +30,9 @@ namespace WpfApp1
         double x, y;
         double maxX, maxY;
         double direction = 1;
+        bool receivingGCode = false;
+        Thread simulate;
+        List<string> gcode = new List<string>();
 
 
         public MainWindow()
@@ -62,57 +65,90 @@ namespace WpfApp1
                     positionTimer.Stop();
                 }));
 
-            // set timer to 0.25s interval
+            // set timer to 0.1s interval
             positionTimer = new System.Timers.Timer(100);
             positionTimer.Elapsed += SendPosition;
             positionTimer.AutoReset = true;
+
         }
 
         private void ProcessCommand(string command)
         {
-            string[] splitCommand = command.Split(' ');
-            switch (splitCommand[0])
+            if (command == "END")
             {
-                case "move":
-                    if(splitCommand[1] == "start")
-                    {
-                        switch (splitCommand[2])
+                Debug.WriteLine(command);
+
+                receivingGCode = false;
+                simulate = new Thread(simulateGCode);
+                simulate.Start();
+            }
+
+            string[] splitCommand = command.Split(' ');
+            if (receivingGCode)
+            {
+
+                switch (splitCommand[0])
+                {
+                    case "move":
+                        if (splitCommand[1] == "start")
                         {
-                            case "x+":
-                                xPlus.Background = Brushes.Yellow;
-                                break;
-                            case "x-":
-                                xMinus.Background = Brushes.Yellow;
-                                break;
-                            case "y+":
-                                yPlus.Background = Brushes.Yellow;
-                                break;
-                            case "y-":
-                                yMinus.Background = Brushes.Yellow;
-                                break;
+                            switch (splitCommand[2])
+                            {
+                                case "x+":
+                                    xPlus.Background = Brushes.Yellow;
+                                    break;
+                                case "x-":
+                                    xMinus.Background = Brushes.Yellow;
+                                    break;
+                                case "y+":
+                                    yPlus.Background = Brushes.Yellow;
+                                    break;
+                                case "y-":
+                                    yMinus.Background = Brushes.Yellow;
+                                    break;
+                            }
                         }
-                    } else
-                    {
-                        switch (splitCommand[2])
+                        else
                         {
-                            case "x+":
-                                xPlus.Background = Brushes.Gray;
-                                break;
-                            case "x-":
-                                xMinus.Background = Brushes.Gray;
-                                break;
-                            case "y+":
-                                yPlus.Background = Brushes.Gray;
-                                break;
-                            case "y-":
-                                yMinus.Background = Brushes.Gray;
-                                break;
+                            switch (splitCommand[2])
+                            {
+                                case "x+":
+                                    xPlus.Background = Brushes.Gray;
+                                    break;
+                                case "x-":
+                                    xMinus.Background = Brushes.Gray;
+                                    break;
+                                case "y+":
+                                    yPlus.Background = Brushes.Gray;
+                                    break;
+                                case "y-":
+                                    yMinus.Background = Brushes.Gray;
+                                    break;
+                            }
                         }
-                    }
-                    break;
-                default:
-                    serverPipe.WriteString("Unknown command");
-                    break;
+                        break;
+
+                    case "M03":
+                        PlasmaOn();
+                        break;
+
+                    case "M05":
+                        PlasmaOff();
+                        break;
+
+                    case "GCODE":
+                        receivingGCode = true;
+                        break;
+
+                    default:
+                        serverPipe.WriteString("Unknown command");
+                        break;
+                }
+            }
+            else
+            {
+                if(command != "GCODE" && command != "END")
+                    gcode.Add(command);
             }
         }
 
@@ -143,9 +179,26 @@ namespace WpfApp1
                 posX.Text = "X: " + x;
                 posY.Text = "Y: " + y;
             });
-            
+        }
 
-            
+        private void PlasmaOn()
+        {
+            plasma.Background = Brushes.Yellow;
+            serverPipe.WriteString("PLASMA ON");
+        }
+
+        private void PlasmaOff()
+        {
+            plasma.Background = Brushes.Gray;
+            serverPipe.WriteString("PLASMA OFF");
+        }
+
+        private void simulateGCode()
+        {
+            foreach(string line in gcode){
+                serverPipe.WriteString("DONE " + line.Split(':')[0]);
+                Thread.Sleep(1000);
+            }
         }
     }
 }
