@@ -74,17 +74,10 @@ namespace WpfApp1
 
         private void ProcessCommand(string command)
         {
-            if (command == "END")
-            {
-                Debug.WriteLine(command);
-
-                receivingGCode = false;
-                simulate = new Thread(simulateGCode);
-                simulate.Start();
-            }
+            
 
             string[] splitCommand = command.Split(' ');
-            if (receivingGCode)
+            if (!receivingGCode)
             {
 
                 switch (splitCommand[0])
@@ -147,8 +140,18 @@ namespace WpfApp1
             }
             else
             {
-                if(command != "GCODE" && command != "END")
+                if (command == "END")
+                {
+                    Debug.WriteLine(command);
+
+                    receivingGCode = false;
+                    simulate = new Thread(simulateGCode);
+                    simulate.Start();
+                }
+                else
+                {
                     gcode.Add(command);
+                }
             }
         }
 
